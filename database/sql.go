@@ -2,22 +2,23 @@ package sql
 
 import (
 	"fmt"
-	student "practice/models/student"
+	"practice/models/student"
 
-	_ "github.com/mattn/go-sqlite3"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
+var err error
 
-func InitDatabase() {
-	var err error
-	DB, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+func init() {
+	
+	DB, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Println("Connection to SQLite database failed:", err)
 		return
 	}
+	fmt.Println(DB)
 	DB.AutoMigrate(&student.Student{})
 }
 

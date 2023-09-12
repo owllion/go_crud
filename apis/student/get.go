@@ -28,36 +28,37 @@ func GetStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
 
 	student := models.Student{}
-
 	if id:= ctx.Query("id"); id !="" {
 		result := db.DB.Where(`"ID" = ?`, id).Find(&student)
-
+		
 		if result.Error != nil {
 			g.SendResponse(500, "500", nil)
 			return
 		}
-		g.SendResponse(200,"200", result)
+		g.SendResponse(200,"200", student)
 		return 
 	}
 
-	g.SendResponse(200,"獲取成功",student)
+	g.SendResponse(200,"回傳所有students",student)
 
 }
 
 func SearchStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
 
-	students  := []models.Student{}
+	students := []models.Student{}
 	if keyword := g.Ctx.Query("keyword") ; keyword != "" {
-		result :=  db.DB.Where(`"name" = ?"`, keyword).Or(`"email" = ?"`, keyword).Find(&students)
+		result := db.DB.Debug().Where(`name LIKE ?`, "%" + keyword + "%").Or(`email LIKE ?`, "%" + keyword + "%").Find(&students)
 
 		if result.Error != nil {
 			g.SendResponse(500, "500", nil)
 			return
 		}
 
-		g.SendResponse(200,"ok",result)
-	} else {
-		g.SendResponse(200,"查詢成功", students)
-	}
+		g.SendResponse(200,"ok",students)
+		return 
+	} 
+
+	g.SendResponse(200,"查詢成功", students)
+	
 }

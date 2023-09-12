@@ -1,7 +1,8 @@
 package studentRoute
 
 import (
-	db "practice/database"
+	"fmt"
+	sql "practice/database"
 	models "practice/models/student"
 	handler "practice/util"
 
@@ -10,7 +11,8 @@ import (
 
 func CreateStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
-	
+
+	db := sql.DB
 	//創建struct instance
 	req := models.Student{}
 	
@@ -18,14 +20,17 @@ func CreateStudent(ctx *gin.Context) {
 	//其他多寫少寫則無視
 	g.Ctx.ShouldBind(&req)
 	
-	result := db.DB.Create(&req)
+	fmt.Println(db)
+
+	result := db.Debug().Create(&req)
+
 
 	if result.Error != nil {
-		g.SendResponse(500, "500", nil)
+		g.SendResponse(500, "新增失敗", nil)
 		return
 	}
 
-	g.SendResponse(201,"新增成功",nil)
+	g.SendResponse(200,"新增成功",nil)
 
 	
 }
