@@ -17,9 +17,11 @@ func UpdateStudent(ctx *gin.Context) {
 	
 	g.Ctx.ShouldBind(&student)
 
-	result := db.DB.Where(`"ID" = ?`, student.ID).Updates(&student)
+	result := db.DB.Debug().Where(`"ID" = ?`, student.ID).Updates(&student)
+	//不用寫Select(*)
+	
 	if result.Error != nil {
-		g.SendResponse(500,"500",nil)
+		g.SendResponse(500,"更新學生資料失敗",result.Error.Error())
 		return
 	}
 	g.SendResponse(200, "更新成功", nil)
