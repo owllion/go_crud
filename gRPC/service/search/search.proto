@@ -9,6 +9,7 @@ message SearchRequest {
 
 message SearchResponse {
   string returned_msg = 1;
+  string page_number = 2;
     
 }
 

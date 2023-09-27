@@ -2,7 +2,7 @@ package studentRoute
 
 import (
 	db "practice/database"
-	models "practice/models/student"
+	student "practice/models"
 	handler "practice/util"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ import (
 func UpdateStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
 	
-	student := models.Student{}
+	student := student.Student{}
 	
 	g.Ctx.ShouldBind(&student)
 

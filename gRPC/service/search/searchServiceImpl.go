@@ -2,6 +2,7 @@ package search
 
 import (
 	"context"
+	"fmt"
 )
 
 // SearchServiceImpl is the implementation of the SearchService defined in the .proto file.
@@ -17,6 +18,7 @@ func (s *SearchServiceImpl) Search(ctx context.Context, req *SearchRequest) (*Se
     // For this example, let's assume we are just returning a dummy response:
     response := &SearchResponse{
         ReturnedMsg: "Your search for '" + req.Query + "' returned no results.",
+        PageNumber : fmt.Sprintf("page number is %d", req.PageNumber),
     }
 
     return response, nil

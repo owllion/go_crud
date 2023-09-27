@@ -2,7 +2,8 @@ package studentRoute
 
 import (
 	db "practice/database"
-	models "practice/models/student"
+	models "practice/models"
+	student "practice/models"
 	handler "practice/util"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ import (
 func GetStudents(ctx *gin.Context) {
 	g := handler.GinContext{Ctx:ctx}
 	
-	students := []models.Student{}
+	students := []student.Student{}
 	result := db.DB.Find(&students)
 
 	if result.Error != nil {
@@ -27,7 +28,7 @@ func GetStudent(ctx *gin.Context) {
 
 	g := handler.GinContext{Ctx: ctx}
 
-	student := models.Student{}
+	student := student.Student{}
 	if id:= ctx.Query("id"); id !="" {
 		result := db.DB.Where(`"ID" = ?`, id).Find(&student)
 		

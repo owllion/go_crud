@@ -2,7 +2,8 @@ package router
 
 import (
 	"fmt"
-	studentRoute "practice/apis/student"
+	searchRoute "practice/controller/search"
+	studentRoute "practice/controller/student"
 	middleware "practice/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,7 @@ func Setup_Router() *gin.Engine {
 		r1.GET("/students/search", studentRoute.SearchStudent)
 		r1.DELETE("/student",studentRoute.DeleteStudent)
 		r1.POST("/student/modify", studentRoute.UpdateStudent)
+		r1.GET("/search", searchRoute.Search) 
 	}
 
 	return router
