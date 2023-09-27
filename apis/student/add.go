@@ -3,7 +3,7 @@ package studentRoute
 import (
 	"fmt"
 	sql "practice/database"
-	models "practice/models/student"
+	models "practice/models"
 	handler "practice/util"
 
 	"github.com/gin-gonic/gin"
