@@ -5,6 +5,7 @@ import (
 	searchRoute "practice/controller/search"
 	studentRoute "practice/controller/student"
 	middleware "practice/middleware"
+	websocket "practice/websocket"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +29,10 @@ func Setup_Router() *gin.Engine {
 		r1.POST("/student/modify", studentRoute.UpdateStudent)
 		r1.GET("/search", searchRoute.Search) 
 	}
-
+	wsGroup := router.Group("ws")
+	{
+		wsGroup.GET("/", websocket.HandleConnection)
+	}
 	return router
 }
 
