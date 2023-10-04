@@ -1,30 +1,49 @@
-
-import { Suspense } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-import { RouteConfig } from "./routes/config";
-import GlobalCss from "./styles/global.css";
+import React, { useState, useEffect } from "react";
+import "./styles.css";
+import Chatroom from "./pages/chatroom";
+import styled from 'styled-components';
 
 
-const App = () => {
-    const { showPopup } = useAppSelector((state) => state.common || {});
-
-    return (
-      <BrowserRouter>
-        <Toaster position="top-center" reverseOrder={false} />
-        {showPopup && <SelectSizePopup />}
-
-        
-          <GlobalCss />
-          <Suspense fallback={<Lottie jsonName="loading" text="loading" />}>
-            <RouteConfig />
-           
-          </Suspense>
-       
-      </BrowserRouter>
-    );
+export default function App() {
+  const [navSize, setnavSize] = useState("10rem");
+  const [navColor, setnavColor] = useState("transparent");
+  const listenScrollEvent = () => {
+    window.scrollY > 10 ? setnavColor("#252734") : setnavColor("transparent");
+    window.scrollY > 10 ? setnavSize("5rem") : setnavSize("10rem");
   };
+  useEffect(() => {
+    window.addEventListener("scroll", listenScrollEvent);
+  });
+
+  return (
+    <AppContainer>
+      {/* <nav
+        style={{
+          backgroundColor: navColor,
+          height: navSize,
+          transition: "all 1s"
+        }}
+      >
+        <ul>
+          <li>Home</li>
+          <li>About</li>
+          <li>Project</li>
+          <li>Skills</li>
+          <li>Contact </li>
+        </ul>
+      </nav> */}
+
+      <Chatroom/>
+    </AppContainer>
+  );
+}
 
 
-export default App;
+const AppContainer = styled.div`
+  display:flex;
+  align-itmes: center;
+  justify-content: center;
+  padding: 3rem;
 
+
+`

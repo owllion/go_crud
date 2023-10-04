@@ -40,5 +40,8 @@ func HandleConnection(c *gin.Context) {
 			fmt.Println("Write Error:", err)
 			return
 		}
+
+		ws.WriteMessage(messageType, p)
+		
 	}
 }

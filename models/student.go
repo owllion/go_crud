@@ -8,5 +8,5 @@ type Student struct {
 	Name          string       `json:"name" gorm:"column:name"`
 	BirthDate     time.Time    `json:"birthDate" gorm:"column:birthDate"`
 	AdmissionYear int          `json:"admissionYear" gorm:"column:admissionYear"`
-	Enrollments   []Enrollment `json:"enrollments" gorm:"foreignKey:StudentRef"`
+	Courses []Course `json:"courses" gorm:"many2many:student_courses;"`
 }

@@ -16,6 +16,11 @@ func InitMySQL() {
 	if err != nil {
 		fmt.Println("Connection to MySQL database failed:", err)
 	}
+
+	fmt.Println("Connect to MySQL!")
+
 	MysqlDB.AutoMigrate(&student.Student{}, &student.Course{}, &student.Enrollment{})
+
+	
 
 }

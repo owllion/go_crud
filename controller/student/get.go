@@ -1,8 +1,8 @@
 package studentRoute
 
 import (
+	"fmt"
 	db "practice/database"
-	models "practice/models"
 	student "practice/models"
 	handler "practice/util"
 
@@ -14,10 +14,11 @@ func GetStudents(ctx *gin.Context) {
 	g := handler.GinContext{Ctx:ctx}
 	
 	students := []student.Student{}
-	result := db.DB.Find(&students)
+	fmt.Println("db-> ", db.MysqlDB)
+	result := db.MysqlDB.Debug().Find(&students)
 
 	if result.Error != nil {
-		g.SendResponse(500, "500", nil)
+		g.SendResponse(500, "不明錯誤", nil)
 		return
 	}
 
@@ -40,14 +41,14 @@ func GetStudent(ctx *gin.Context) {
 		return 
 	}
 
-	g.SendResponse(200,"回傳所有students",student)
+	g.SendResponse(200,"取得所有學生",student)
 
 }
 
 func SearchStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
 
-	students := []models.Student{}
+	students := []student.Student{}
 	if keyword := g.Ctx.Query("keyword") ; keyword != "" {
 		result := db.DB.Debug().Where(`name LIKE ?`, "%" + keyword + "%").Or(`email LIKE ?`, "%" + keyword + "%").Find(&students)
 

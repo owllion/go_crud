@@ -23,13 +23,12 @@ func Setup_Router() *gin.Engine {
 		r1.GET("/student", studentRoute.GetStudent)
 		r1.GET("/students", studentRoute.GetStudents)
 		r1.POST("/student", studentRoute.CreateStudent)
-		r1.POST("/student/ms", studentRoute.CreateMySqlStudent)
 		r1.GET("/students/search", studentRoute.SearchStudent)
 		r1.DELETE("/student",studentRoute.DeleteStudent)
 		r1.POST("/student/modify", studentRoute.UpdateStudent)
 		r1.GET("/search", searchRoute.Search) 
 	}
-	wsGroup := router.Group("ws")
+	wsGroup := router.Group("chat")
 	{
 		wsGroup.GET("/", websocket.HandleConnection)
 	}
