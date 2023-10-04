@@ -5,6 +5,8 @@ import (
 	student "practice/models"
 	handler "practice/util"
 
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,15 +17,30 @@ func DeleteStudent(ctx *gin.Context) {
 	
 	student := student.Student{}
 	
-	g.Ctx.ShouldBind(&student) //populate到struct裡面
+	g.Ctx.ShouldBind(&student)
+	if id := ctx.Query("id") ; id != "" {
 
-	result := db.DB.Debug().Table("student").Delete(`"ID" = ?`, student.ID)
+		id, err := strconv.Atoi(id)
 
-	if result.Error != nil {
-		g.SendResponse(500,"刪除失敗",nil)
+		if err != nil {
+			g.SendResponse(400, "無效id", err.Error())
+			return
+		}
+		
+		result := db.MysqlDB.Debug().Where("`id` = ?", id).Delete(&student)
+
+		if result.RowsAffected == 0 { 
+			g.SendResponse(404, "未找到學生", nil)
+			return
+		}
+
+		if result.Error != nil {
+			g.SendResponse(500,"刪除學生失敗",result.Error.Error())
+			return
+		}
+		g.SendResponse(200, "刪除成功", nil)
 		return
 	}
-
-	g.SendResponse(200,"刪除成功",nil)
-
+	g.SendResponse(400,"請傳學生id",nil)
+	
 }

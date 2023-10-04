@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	courseRoute "practice/controller/course"
 	searchRoute "practice/controller/search"
 	studentRoute "practice/controller/student"
 	middleware "practice/middleware"
@@ -18,16 +19,26 @@ func Setup_Router() *gin.Engine {
 
 	fmt.Println("set up router!")
 
-	r1 := router.Group("api") 
+	student := router.Group("api") 
 	{
-		r1.GET("/student", studentRoute.GetStudent)
-		r1.GET("/students", studentRoute.GetStudents)
-		r1.POST("/student", studentRoute.CreateStudent)
-		r1.GET("/students/search", studentRoute.SearchStudent)
-		r1.DELETE("/student",studentRoute.DeleteStudent)
-		r1.POST("/student/modify", studentRoute.UpdateStudent)
-		r1.GET("/search", searchRoute.Search) 
+		student.GET("/student", studentRoute.GetStudent)
+		student.GET("/students", studentRoute.GetStudents)
+		student.POST("/student", studentRoute.CreateStudent)
+		student.GET("/students/search", studentRoute.SearchStudent)
+		student.DELETE("/student",studentRoute.DeleteStudent)
+		student.POST("/student/modify", studentRoute.UpdateStudent)
+		student.GET("/search", searchRoute.Search) 
 	}
+
+	course := router.Group("api")
+	{
+		course.GET("/course", courseRoute.GetCourse)
+		course.GET("/courses", courseRoute.GetCourses)
+		course.DELETE("/course", courseRoute.DeleteCourse)
+		course.POST("/course", courseRoute.CreateCourse)
+	}
+
+
 	wsGroup := router.Group("chat")
 	{
 		wsGroup.GET("/", websocket.HandleConnection)
