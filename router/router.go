@@ -5,6 +5,7 @@ import (
 	courseRoute "practice/controller/course"
 	searchRoute "practice/controller/search"
 	studentRoute "practice/controller/student"
+	scRoute "practice/controller/student_course"
 	middleware "practice/middleware"
 	websocket "practice/websocket"
 
@@ -36,6 +37,13 @@ func Setup_Router() *gin.Engine {
 		course.GET("/courses", courseRoute.GetCourses)
 		course.DELETE("/course", courseRoute.DeleteCourse)
 		course.POST("/course", courseRoute.CreateCourse)
+	}
+
+	studentCourseRoute := router.Group("api")
+	{
+		studentCourseRoute.GET("/sc", scRoute.GetStudentCourses)
+		studentCourseRoute.POST("/sc", scRoute.CreateStudentCourse)
+		studentCourseRoute.DELETE("/sc", scRoute.DeleteStudentCourse)
 	}
 
 

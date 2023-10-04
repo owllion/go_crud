@@ -1,4 +1,4 @@
-package courseRoute
+package scRoute
 
 import (
 	db "practice/database"
@@ -8,19 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateCourse(ctx *gin.Context) {
+func CreateStudentCourse(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
-	req := []student.Course{}
+	req := []student.StudentCourse{}
 	g.Ctx.ShouldBind(&req)
 	
 	result := db.MysqlDB.Debug().Create(&req)
 
+
 	if result.Error != nil {
-		g.SendResponse(500, "Fail to add student course", nil)
+		g.SendResponse(500, "Fail to create student course", nil)
 		return
 	}
 
-	g.SendResponse(200,"create student course successfully",nil)
+	g.SendResponse(200,"Create student successfully",nil)
 
 	
 }

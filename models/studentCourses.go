@@ -3,7 +3,9 @@ package student
 import "time"
 
 type StudentCourse struct {
-    StudentID string
-    CourseID  string
-    EnrollmentDate time.Time
+    StudentID int `gorm:"primaryKey"` 
+    CourseID  int `gorm:"primaryKey"` 
+    EnrollmentDate time.Time 
+    Student Student
+    Course Course
 }

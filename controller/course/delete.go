@@ -1,4 +1,4 @@
-package studentRoute
+package courseRoute
 
 import (
 	db "practice/database"
