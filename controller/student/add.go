@@ -12,7 +12,7 @@ func CreateStudent(ctx *gin.Context) {
 	g := handler.GinContext{Ctx: ctx}
 
 	//創建struct instance
-	req := student.Student{}
+	req := []student.Student{}
 	
 	//從請求拿取資料並populate到空struct裡，type不符會error
 	//其他多寫少寫則無視

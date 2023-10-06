@@ -31,7 +31,7 @@ func GetStudent(ctx *gin.Context) {
 
 	student := student.Student{}
 	if id:= ctx.Query("id"); id !="" {
-		result := db.DB.Where(`"ID" = ?`, id).Find(&student)
+		result := db.MysqlDB.Debug().Where("`id` = ?", id).Find(&student)
 		
 		if result.Error != nil {
 			g.SendResponse(500, "500", nil)
