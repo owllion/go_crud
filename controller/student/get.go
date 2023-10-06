@@ -1,10 +1,10 @@
 package studentRoute
 
 import (
-	"fmt"
 	db "practice/database"
 	student "practice/models"
 	handler "practice/util"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +14,6 @@ func GetStudents(ctx *gin.Context) {
 	g := handler.GinContext{Ctx:ctx}
 	
 	students := []student.Student{}
-	fmt.Println("db-> ", db.MysqlDB)
 	result := db.MysqlDB.Debug().Find(&students)
 
 	if result.Error != nil {
@@ -22,7 +21,7 @@ func GetStudents(ctx *gin.Context) {
 		return
 	}
 
-	g.SendResponse(200,"獲取成功",students)
+	g.SendResponse(200,"get all students data successfully",students)
 }
 
 func GetStudent(ctx *gin.Context) {
@@ -31,17 +30,30 @@ func GetStudent(ctx *gin.Context) {
 
 	student := student.Student{}
 	if id:= ctx.Query("id"); id !="" {
-		result := db.MysqlDB.Debug().Where("`id` = ?", id).Find(&student)
-		
-		if result.Error != nil {
-			g.SendResponse(500, "500", nil)
+		sID, err1 := strconv.Atoi(id)
+
+		if err1 != nil {
+			g.SendResponse(400, "Invalid student id", nil)
 			return
 		}
-		g.SendResponse(200,"200", student)
+
+
+		//其實這邊不把id轉換成int，他也是找的到
+		result := db.MysqlDB.Debug().Where("`id` = ?", sID).Find(&student)
+		
+		if result.Error != nil {
+			g.SendResponse(500, result.Error.Error(), nil)
+			return
+		}
+		if result.RowsAffected == 0 {
+			g.SendResponse(404, "no such student", nil)
+			return 
+		}
+		g.SendResponse(200,"get student data successfully", student)
 		return 
 	}
 
-	g.SendResponse(200,"取得所有學生",student)
+	g.SendResponse(400,"Please provide valid student's id",student)
 
 }
 

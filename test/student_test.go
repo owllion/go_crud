@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	studentRoute "practice/controller/student"
 	"testing"
+	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/gin-gonic/gin"
@@ -14,29 +15,43 @@ import (
 )
 
 func TestGetStudent(t *testing.T) {
-	// 創建 sqlmock 實例
-	MysqlDB, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-	
-	defer MysqlDB.Close()
+	// // 創建 sqlmock 實例
+	// db, mock, err :=  sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual)) 
 
+	// if err != nil {
+	// 	t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	// }
+	
+	// defer db.Close()
+
+	
+
+// 在其他代碼上方
+const layout = "2006-01-02T15:04:05Z07:00"
+parsedDate, err := time.Parse(layout, "1995-05-25T08:00:00+08:00")
+if err != nil {
+    t.Fatalf("Failed to parse date: %v", err)
+}
 	// 模擬資料庫回應
 	rows := sqlmock.NewRows([]string{"id", "student_id", "name", "birth_date", "admission_year"}).
-		AddRow(5, "s123", "Alex", "1995-05-25T08:00:00+08:00", 2013)
-	mock.ExpectQuery("^SELECT (.+) FROM `students` WHERE `id` = ?$").WithArgs(5).WillReturnRows(rows)
+    AddRow(5, "s123", "Alex", parsedDate, 2013)
 
+	Mock.ExpectQuery("SELECT * FROM `students` WHERE `id` = ?").WithArgs(6).WillReturnRows(rows)
+
+
+
+
+
+	if err := Mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 	
 
 	// 使用 gin 測試
 	r := gin.Default()
 	r.GET("/student", studentRoute.GetStudent)
 
-	req, _ := http.NewRequest("GET", "/student?id=5", nil)
+	req, _ := http.NewRequest("GET", "/student?id=6", nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
 

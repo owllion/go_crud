@@ -20,7 +20,4 @@ func InitMySQL() {
 	fmt.Println("Connect to MySQL!")
 
 	MysqlDB.AutoMigrate(&student.Student{}, &student.Course{}, &student.StudentCourse{})
-
-	
-
 }
