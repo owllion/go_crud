@@ -40,6 +40,7 @@ func setup() {
 	db.SetDB(gormDB)
 }
 
+
 func teardown() {
 	defer mockDB.Close()
 }

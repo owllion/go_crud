@@ -13,8 +13,7 @@ var (
 //測試用: mock mysql database
 //使用方法: 測試檔案中手動呼叫
 func SetDB(mockSql *gorm.DB) {
-	MysqlDB = mockSql
-	PostgresDB = mockSql
+	DB = mockSql
 }
 /* NOTE: 
 db賦值流程:

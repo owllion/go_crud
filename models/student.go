@@ -11,3 +11,8 @@ type Student struct {
 	Courses []Course `json:"courses" gorm:"many2many:student_courses;"`
 	//不會存到db
 }
+
+
+func (Student) TableName() string {
+	return "enrollment.student"
+}

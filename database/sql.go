@@ -2,6 +2,6 @@ package db
 
 func init() {
 	// InitMySQL()
-	InitPosgres()
+	InitPostgres()
 	// InitSQLite()
 }

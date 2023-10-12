@@ -11,6 +11,10 @@ type StudentCourse struct {
     CreatedAt time.Time `gorm:"type:datetime;default:CURRENT_TIMESTAMP"`
 }
 
+func (StudentCourse) TableName() string {
+	return "enrollment.student_course"
+}
+
 //NOTE: 只寫 `json:"-"，完全不會影響最終回傳結果，只會受preload影響
 //NOTE:　寫完整的　`json:"-" gorm:"foreignKey:StudentID;references:ID"`，才會真的讓最終結果不回傳此欄位
 //NOTE:　gorm:"foreignKey:StudentID;references:ID　->  表示 StudentID 是用來與 Student 表的 ID 欄位建立關聯的外部鍵，

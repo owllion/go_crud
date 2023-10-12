@@ -8,3 +8,7 @@ type Course struct {
 	Credits  int       `json:"credits" gorm:"column:credits"`
 	Students []Student `json:"students" gorm:"many2many:student_courses;"`
 }
+
+func (Course) TableName() string {
+	return "enrollment.course"
+}
