@@ -6,9 +6,10 @@ type StudentCourse struct {
     StudentID int `gorm:"primaryKey"` 
     CourseID  int `gorm:"primaryKey"` 
     EnrollmentDate time.Time 
-    Student Student `json:"-" gorm:"foreignKey:StudentID;references:ID"`
-    Course Course `json: "-" gorm:"foreignKey:CourseID;references:ID"`
-    CreatedAt time.Time `gorm:"type:datetime;default:CURRENT_TIMESTAMP"`
+    Student Student `gorm:"foreignKey:StudentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+    Course Course `gorm:"foreignKey:CourseID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+    
+    CreatedAt time.Time `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP"`
 }
 
 func (StudentCourse) TableName() string {

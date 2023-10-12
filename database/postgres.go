@@ -20,6 +20,7 @@ func InitPostgres() {
         NamingStrategy: schema.NamingStrategy{
             SingularTable: true,
         },
+        
     })
 
     if err != nil {
@@ -28,6 +29,7 @@ func InitPostgres() {
 
     fmt.Println("Connected to the pos!")
 
-    DB.AutoMigrate(&student.Student{}, &student.Course{}, &student.StudentCourse{})
+    // DB.AutoMigrate(&student.Student{}, &student.Course{})
+    DB.AutoMigrate(&student.StudentCourse{})
     
 }
