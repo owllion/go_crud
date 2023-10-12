@@ -17,7 +17,7 @@ func CreateStudentCourse(ctx *gin.Context) {
 
 
 	if result.Error != nil {
-		g.SendResponse(500, "Fail to create student course", nil)
+		g.SendResponse(500, "Fail to create student course", result.Error.Error())
 		return
 	}
 

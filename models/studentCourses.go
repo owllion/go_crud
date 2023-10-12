@@ -8,6 +8,7 @@ type StudentCourse struct {
     EnrollmentDate time.Time 
     Student Student `json:"-" gorm:"foreignKey:StudentID;references:ID"`
     Course Course `json: "-" gorm:"foreignKey:CourseID;references:ID"`
+    CreatedAt time.Time `gorm:"type:datetime;default:CURRENT_TIMESTAMP"`
 }
 
 //NOTE: 只寫 `json:"-"，完全不會影響最終回傳結果，只會受preload影響
