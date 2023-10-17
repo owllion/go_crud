@@ -20,10 +20,7 @@ var (
 
 func setup() {
 	// NOTE: 創建 sqlmock 實例，原本只有sqlmock.New()，但有看到好簡篇教學都說要加上這啥QueryMatcher
-	mockDB, Mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-	if err != nil {
-		panic("couldn't create mock: " + err.Error())
-	}
+	SetMock()
 
 	//NOTE: 不加這會報錯! 意義不明
 	Mock.ExpectQuery("SELECT VERSION()").WillReturnRows(sqlmock.NewRows([]string{"version"}).AddRow("5.7.25"))
@@ -40,7 +37,13 @@ func setup() {
 	db.SetDB(gormDB)
 }
 
+func SetMock() {
+	mockDB, Mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		panic("couldn't create mock: " + err.Error())
+	}
 
+}
 func teardown() {
 	defer mockDB.Close()
 }

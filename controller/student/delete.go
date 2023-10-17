@@ -27,7 +27,7 @@ func DeleteStudent(ctx *gin.Context) {
 			return
 		}
 		
-		result := db.MysqlDB.Debug().Where("`id` = ?", id).Delete(&student)
+		result := db.PostgresDB.Debug().Where("`id` = ?", id).Delete(&student)
 
 		if result.RowsAffected == 0 { 
 			g.SendResponse(404, "未找到學生", nil)

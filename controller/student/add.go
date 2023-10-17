@@ -1,6 +1,7 @@
 package studentRoute
 
 import (
+	"fmt"
 	db "practice/database"
 	student "practice/models"
 	handler "practice/util"
@@ -13,12 +14,15 @@ func CreateStudent(ctx *gin.Context) {
 
 	//創建struct instance
 	req := []student.Student{}
+	fmt.Println("this is req",req)
 	
 	//從請求拿取資料並populate到空struct裡，type不符會error
 	//其他多寫少寫則無視
-	g.Ctx.ShouldBind(&req)
+	g.Ctx.ShouldBindJSON(&req)
+
+	fmt.Println("create db", req) //空的!!!  為何??
 	
-	result := db.MysqlDB.Debug().Create(&req)
+	result := db.PostgresDB.Debug().Create(&req)
 
 
 	if result.Error != nil {

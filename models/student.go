@@ -9,7 +9,7 @@ type Student struct {
 	BirthDate     time.Time    `json:"birthDate" gorm:"column:birth_date"`
 	AdmissionYear int          `json:"admissionYear" gorm:"column:admission_year"`
 	Courses []Course `json:"courses" gorm:"many2many:enrollment.student_course;;"`
-	CreatedAt time.Time `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP"`
+	CreatedAt time.Time `json:"created_at" gorm:"default:CURRENT_TIMESTAMP"`
 
 	//不會存到db
 }

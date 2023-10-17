@@ -26,7 +26,7 @@ func UpdateStudent(ctx *gin.Context) {
 			return
 		}
 		//NOTE: mysql的寫法是"‵‵"，剛好和postgres相反(大概啦...目前改完後就更新成功了)
-		result := db.MysqlDB.Debug().Where("`id` = ?", id).Updates(&student)
+		result := db.PostgresDB.Debug().Where("`id` = ?", id).Updates(&student)
 
 		if result.RowsAffected == 0 { 
 			/*

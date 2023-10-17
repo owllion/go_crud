@@ -16,7 +16,7 @@ func InitPostgres() {
 
 	var err error
 
-    DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+    PostgresDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
         NamingStrategy: schema.NamingStrategy{
             SingularTable: true,
         },
@@ -29,7 +29,7 @@ func InitPostgres() {
 
     fmt.Println("Connected to the pos!")
 
-    // DB.AutoMigrate(&student.Student{}, &student.Course{})
-    DB.AutoMigrate(&student.StudentCourse{})
+    PostgresDB.AutoMigrate(&student.Student{}, &student.Course{})
+    // DB.AutoMigrate(&student.StudentCourse{}) //不會新增除了left、right table的id
     
 }

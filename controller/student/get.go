@@ -37,9 +37,12 @@ func GetStudent(ctx *gin.Context) {
 			return
 		}
 
-
+		//NOTE: MySql寫法
 		//其實這邊不把id轉換成int，他也是找的到
-		result := db.MysqlDB.Debug().Where("`id` = ?", sID).Find(&student)
+		// result := db.PostgresDB.Debug().Where("`id` = ?", sID).Find(&student)
+
+		//NOTE: POstgres寫法
+		result := db.PostgresDB.Debug().Where(`"id" = ?`, sID).Find(&student)
 		
 		if result.Error != nil {
 			g.SendResponse(500, result.Error.Error(), nil)
