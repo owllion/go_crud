@@ -38,7 +38,10 @@ func setup() {
 }
 
 func SetMock() {
-	mockDB, Mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	//QueryMatcherEqual -> 這可寫可不寫，用途就是告訴sqlMock你想要怎樣去匹配你的actulSQL和expectedSQL 
+	// mockDB, Mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	//預設是 QueryMatcherRegexp -> 用正規表達去匹配，比Equal匹配更靈活，這也是為啥這是預設值
+	mockDB, Mock, err = sqlmock.New()
 	if err != nil {
 		panic("couldn't create mock: " + err.Error())
 	}

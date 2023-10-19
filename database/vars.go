@@ -14,6 +14,7 @@ var (
 //使用方法: 測試檔案中手動呼叫
 func SetDB(mockSql *gorm.DB) {
 	DB = mockSql
+	PostgresDB = mockSql
 }
 /* NOTE: 
 db賦值流程:

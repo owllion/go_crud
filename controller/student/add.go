@@ -18,10 +18,7 @@ func CreateStudent(ctx *gin.Context) {
 	
 	//從請求拿取資料並populate到空struct裡，type不符會error
 	//其他多寫少寫則無視
-	g.Ctx.ShouldBindJSON(&req)
-
-	fmt.Println("create db", req) //空的!!!  為何??
-	
+	g.Ctx.ShouldBindJSON(&req)	
 	result := db.PostgresDB.Debug().Create(&req)
 
 

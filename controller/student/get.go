@@ -14,10 +14,10 @@ func GetStudents(ctx *gin.Context) {
 	g := handler.GinContext{Ctx:ctx}
 	
 	students := []student.Student{}
-	result := db.MysqlDB.Debug().Find(&students)
+	result := db.PostgresDB.Debug().Find(&students)
 
 	if result.Error != nil {
-		g.SendResponse(500, "不明錯誤", nil)
+		g.SendResponse(500, "不明錯誤", result.Error.Error())
 		return
 	}
 

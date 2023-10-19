@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	student "practice/models"
+	"regexp"
 
 	"net/http/httptest"
 	studentRoute "practice/controller/student"
-
 	"testing"
 	"time"
 
@@ -18,7 +18,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//NOTE: 理論上大概是這邊
 type RequestOptions struct {
 	Method     string
 	Route      string
@@ -64,16 +63,21 @@ func getParsedDate(t *testing.T, dateStr string) (time.Time, error) {
 
 
 func TestGetStudent(t *testing.T) {
+	SetMock()
 
 	//NOTE: 建立假資料 & sql clause
 	parsedBirth, _ := getParsedDate(t,"1995-05-25T08:00:00+08:00")
 	fmt.Println("pB",parsedBirth)
 	rows := sqlmock.NewRows([]string{"id", "student_id", "name", "birth_date", "admission_year"}).
-    AddRow(5, "s123", "Alex", parsedBirth, 2013 )
+    AddRow(5, "s123", "Alex", parsedBirth, 2013)
 
 	//NOTE: Postgres Clause
 	// query := `SELECT * FROM "enrollment"."student" WHERE "id" = $1`
-	Mock.ExpectQuery(`SELECT * FROM "enrollment"."student" WHERE "id" = 5`).WithArgs(5).WillReturnRows(rows)
+	// Mock.ExpectQuery(`SELECT (.+) FROM "enrollment"."student" WHERE (.+)`).WithArgs(5).WillReturnRows(rows)
+
+
+	// queryPattern := regexp.QuoteMeta(`SELECT * FROM "enrollment"."student" WHERE "id" = $1`)
+	Mock.ExpectQuery(`SELECT * FROM "enrollment"."student" WHERE "id" = $1`).WithArgs(5).WillReturnRows(rows)
 
 
 	//NOTE: MySQl Clause
@@ -91,6 +95,7 @@ func TestGetStudent(t *testing.T) {
 
 	//NOTE: ExpectationsWereMet 這個一定要放在request之後!!! 不然他就會抱錯說 mock sql clause 沒有match 之類的錯誤
 	//NOTE: 加上這，就過不了，不然是有過的
+	fmt.Println("RESP!!!", resp)
 	if err := Mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 		return
@@ -167,9 +172,11 @@ func TestAddStudent(t *testing.T) {
 	query := fmt.Sprintf(`INSERT INTO "enrollment"."student" ("student_id","name","birth_date","admission_year","created_at") VALUES ('s654','John Doe','%s',2019) RETURNING "id","created_at"`, parsedDate.Format("2006-01-02 15:04:05"))
 
 
-
-	Mock.ExpectExec(query).
+    Mock.ExpectBegin()
+	Mock.ExpectExec(regexp.QuoteMeta(query)).
 		WithArgs("s654", "John Doe", parsedDate, 2019)
+	Mock.ExpectCommit()
+	
 		// WillReturnResult(sqlmock.NewResult(1, 1))
 	 // assuming the insert will return ID 1 and affect 1 row
 	 students := []student.Student{
