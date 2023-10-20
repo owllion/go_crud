@@ -40,6 +40,7 @@ func HandleConnection(c *gin.Context) {
 			fmt.Println("Write Error:", err)
 			return
 		}
+		// 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
 
 		ws.WriteMessage(messageType, p)
 		

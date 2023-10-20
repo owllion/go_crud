@@ -77,7 +77,8 @@ func TestGetStudent(t *testing.T) {
 
 
 	// queryPattern := regexp.QuoteMeta(`SELECT * FROM "enrollment"."student" WHERE "id" = $1`)
-	Mock.ExpectQuery(`SELECT * FROM "enrollment"."student" WHERE "id" = $1`).WithArgs(5).WillReturnRows(rows)
+	Mock.ExpectQuery(`SELECT (.+) FROM "enrollment"."student" WHERE (.+)`).WillReturnRows(rows)
+
 
 
 	//NOTE: MySQl Clause

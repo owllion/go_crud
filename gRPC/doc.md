@@ -23,7 +23,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 5. gRPC 客戶端：
 - 要初始化一個gRPC client，在server中引入並統一初始化(client.InitGRPCClient())，就不用每次呼叫api都要重新初始化一次
 
-6. ??
+6. server & goroutine
 - 去根目錄的server.go引入 gRPC server，要注意其中一個server要運行在另個goroutine裡面，因為server是blocking的
 
 
