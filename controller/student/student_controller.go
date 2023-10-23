@@ -1,6 +1,7 @@
-package studentRoute
+package studentController
 
 import (
+	"fmt"
 	db "practice/database"
 	student "practice/models"
 	handler "practice/util"
@@ -127,8 +128,8 @@ func (sc *StudentController) UpdateStudent() gin.HandlerFunc {
 	
 			if result.RowsAffected == 0 { 
 				/*
-					NOTE: 
-						用gorm的updates，如果找不到資源，他就只是不更新，不會抱錯，還會return 200! 如果想要確切知道到底有沒有資料被更新，就要用RowsAffected去查看被影響的資料筆數
+				NOTE: 
+					用gorm的updates，如果找不到資源，他就只是不更新，不會抱錯，還會return 200! 如果想要確切知道到底有沒有資料被更新，就要用RowsAffected去查看被影響的資料筆數
 				*/
 	
 				g.SendResponse(404, "未找到學生", nil)
@@ -143,6 +144,31 @@ func (sc *StudentController) UpdateStudent() gin.HandlerFunc {
 			return
 		}
 		g.SendResponse(400,"請傳學生id",nil)
+
+	}
+}
+
+
+func(sc * StudentController) CreateStudent() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		g := handler.GinContext{Ctx: ctx}
+
+		//創建struct instance
+		req := []student.Student{}
+		fmt.Println("this is req",req)
+		
+		//從請求拿取資料並populate到空struct裡，type不符會error
+		//其他多寫少寫則無視
+		g.Ctx.ShouldBindJSON(&req)	
+		result := db.PostgresDB.Debug().Create(&req)
+
+
+		if result.Error != nil {
+			g.SendResponse(500, "新增失敗", nil)
+			return
+		}
+
+		g.SendResponse(200,"新增成功",nil)
 
 	}
 }

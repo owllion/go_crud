@@ -1,4 +1,4 @@
-package studentRoute
+package studentController
 
 import (
 	"fmt"
