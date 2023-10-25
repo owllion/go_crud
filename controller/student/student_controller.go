@@ -2,9 +2,11 @@ package studentController
 
 import (
 	"fmt"
+
 	db "practice/database"
 	student "practice/models"
 	handler "practice/util"
+	"reflect"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -153,22 +155,67 @@ func(sc * StudentController) CreateStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		g := handler.GinContext{Ctx: ctx}
 
-		//創建struct instance
-		req := []student.Student{}
-		fmt.Println("this is req",req)
-		
-		//從請求拿取資料並populate到空struct裡，type不符會error
-		//其他多寫少寫則無視
-		g.Ctx.ShouldBindJSON(&req)	
-		result := db.PostgresDB.Debug().Create(&req)
+		type responseJSON struct {
+			student.Student
+			Name  string `json:"name"`
+		}
 
+		// 創建struct instance
+		// req := []student.Student{}
+		req := []responseJSON{}
+		// 從請求拿取資料並populate到空struct裡，type不符會error
+		// 其他多寫少寫則無視
+		g.Ctx.ShouldBindJSON(&req)
+		fmt.Println("this is req", req)
+
+		// 用反射去設置字段為nil，如果它們的值為0或空字符串
+		for _, item := range req {
+			// 取得item的反射值，因為item是一個結構，所以需要使用Elem()來獲取其基礎值
+			// 例如: 如果 item 是 Student{ID: 1, Name: "John"}, 則 v 現在就代表這個Student值
+			v := reflect.ValueOf(&item).Elem()
+			
+			// 迭代這個Student結構的所有欄位
+			for i := 0; i < v.NumField(); i++ {
+				fieldValue := v.Field(i)  // 這將獲取item的第i個欄位的反射值
+				//取得此struct的每個欄位
+				
+				// 檢查這個欄位是否是指針類型
+				if fieldValue.Kind() == reflect.Ptr {
+					isZero := false
+			
+					// 針對欄位的基礎類型檢查其值是否為零值
+					switch fieldValue.Elem().Kind() {
+					case reflect.String:
+						// 如果這個欄位是一個指向字符串的指針，例如Name字段
+						// fieldValue.Elem().String() 就會回傳這個字符串的實際值，例如"John"
+						isZero = fieldValue.Elem().String() == ""
+					case reflect.Float64:
+						// 同理，如果欄位是浮點數
+						isZero = fieldValue.Elem().Float() == 0
+					case reflect.Int, reflect.Int64:
+						// 如果是整數，例如 ID，假設它的值是1，這裡就會回傳1
+						isZero = fieldValue.Elem().Int() == 0
+					case reflect.Struct:
+						// 對於結構，我們需要比較它是否等於該類型的零值
+						isZero = fieldValue.Elem().Interface() == reflect.Zero(fieldValue.Elem().Type()).Interface()
+					}
+			
+					// 如果欄位是零值，將這個指針設置為nil
+					if isZero {
+						fieldValue.Set(reflect.Zero(fieldValue.Type()))
+					}
+				}
+			}
+		}
+		
+		result := db.PostgresDB.Debug().Create(&req)
 
 		if result.Error != nil {
 			g.SendResponse(500, "新增失敗", nil)
 			return
 		}
 
-		g.SendResponse(200,"新增成功",nil)
-
+		g.SendResponse(200, "新增成功", nil)
 	}
+
 }
