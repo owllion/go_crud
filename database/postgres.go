@@ -29,7 +29,7 @@ func InitPostgres() {
 
     fmt.Println("Connected to the pos!")
 
-    PostgresDB.AutoMigrate(&student.Student{}, &student.Course{})
-    // DB.AutoMigrate(&student.StudentCourse{}) //不會新增除了left、right table的id
-    
+    // PostgresDB.AutoMigrate(&student.Student{}, &student.Course{})
+    // PostgresDB.AutoMigrate(&student.StudentCourse{}) //不會新增除了left、right table的id
+    PostgresDB.AutoMigrate(&student.Order{})
 }
