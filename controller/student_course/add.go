@@ -3,13 +3,13 @@ package scRoute
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateStudentCourse(ctx *gin.Context) {
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 	req := []student.StudentCourse{}
 	g.Ctx.ShouldBind(&req)
 	

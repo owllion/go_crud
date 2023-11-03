@@ -3,6 +3,7 @@ package studentController
 import (
 	db "practice/database"
 	student "practice/models"
+	"practice/util"
 	handler "practice/util"
 	"strconv"
 
@@ -11,7 +12,7 @@ import (
 
 
 func GetStudents(ctx *gin.Context) {
-	g := handler.GinContext{Ctx:ctx}
+	g := util.GinContext{Ctx:ctx}
 	
 	students := []student.Student{}
 	result := db.PostgresDB.Debug().Find(&students)

@@ -3,13 +3,13 @@ package courseRoute
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateCourse(ctx *gin.Context) {
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 	req := []student.Course{}
 	g.Ctx.ShouldBind(&req)
 	

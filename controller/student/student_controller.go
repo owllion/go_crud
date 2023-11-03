@@ -5,6 +5,7 @@ import (
 
 	db "practice/database"
 	student "practice/models"
+	"practice/util"
 	handler "practice/util"
 	"reflect"
 	"strconv"
@@ -24,7 +25,7 @@ func NewStudentController(e *gin.Engine) *StudentController {
 // 这里是业务方法
 func (sc *StudentController) GetStudent() gin.HandlerFunc {
     return func(ctx *gin.Context) {
-        g := handler.GinContext{Ctx: ctx}
+        g := util.GinContext{Ctx: ctx}
 
 		student := student.Student{}
 		if id:= ctx.Query("id"); id !="" {
@@ -77,7 +78,7 @@ func (sc *StudentController) GetStudents() gin.HandlerFunc {
 
 func (sc *StudentController) DeleteStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		student := student.Student{}
 
 		g.Ctx.ShouldBind(&student)
@@ -112,7 +113,7 @@ func (sc *StudentController) DeleteStudent() gin.HandlerFunc {
 
 func (sc *StudentController) UpdateStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context)  {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 	
 		student := student.Student{}
 		
@@ -153,7 +154,7 @@ func (sc *StudentController) UpdateStudent() gin.HandlerFunc {
 
 func(sc * StudentController) CreateStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 
 		type responseJSON struct {
 			student.Student

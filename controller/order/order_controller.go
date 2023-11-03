@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 	"reflect"
 	"strconv"
 	"time"
@@ -26,7 +26,7 @@ func NewOrderController(e *gin.Engine) *OrderController {
 
 func (sc *OrderController) GetLastOrderInEachMonth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		type responseJSON struct {
 			LastOrder map[string]student.Order
 		}
@@ -70,7 +70,7 @@ func (sc *OrderController) GetLastOrderInEachMonth() gin.HandlerFunc {
 }
 func (sc *OrderController) GetAllOrdersInLastMonth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		res := []student.Order{}
 
 		today := time.Now()
@@ -118,7 +118,7 @@ func (sc *OrderController) CountOrdersInEachMonth() gin.HandlerFunc {
 		type responseJSON struct {
 			TotalNumOfOrders map[string]int
 		}
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		res := responseJSON{}
 
 		tempTotalNumOfOrders := make(map[string]int)
@@ -160,6 +160,7 @@ func (sc *OrderController) CountOrdersInEachMonth() gin.HandlerFunc {
 		}
 		res.TotalNumOfOrders = tempTotalNumOfOrders
 
+		util.Log("獲取每月訂單數量成功", "", "")
 		g.SendResponse(200, "OK!", res)
 	}
 }
@@ -169,7 +170,7 @@ func (sc *OrderController) CountOrdersInMonth() gin.HandlerFunc {
 			TotalNumOfOrders int `gorm:"column:total_number_of_orders"`
 		}
 		
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		res := responseJSON{} 
 
 		var startDate,endDate time.Time
@@ -214,7 +215,7 @@ func (sc *OrderController) CountOrdersInMonth() gin.HandlerFunc {
 func (sc *OrderController) GetOrderNumInSpecificRange() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//TODO: 找出特定範圍，例如2023-01-01到2023-03-31，每天的訂單數量
-		g := handler.GinContext{Ctx : ctx}
+		g := util.GinContext{Ctx : ctx}
 		res := []student.Order{}
 	
 		var startDate,endDate string
@@ -277,7 +278,7 @@ func (sc *OrderController) GetOrderNumInSpecificRange() gin.HandlerFunc {
 }
 func (sc *OrderController) GetOrderAveragePricesWithinAWeek() gin.HandlerFunc {
     return func(ctx *gin.Context) {
-        g := handler.GinContext{Ctx: ctx}
+        g := util.GinContext{Ctx: ctx}
 
 		//TODO: 取得7天內每一天的total_price平均值(formatted to one decimal place)，並回傳map(k:日期, v:平均值)
 		queryType := "average prices"
@@ -385,7 +386,7 @@ func (sc *OrderController) GetOrderAveragePricesWithinAWeek() gin.HandlerFunc {
 }
 func (sc *OrderController) GetOrdersWithinAWeek() gin.HandlerFunc {
     return func(ctx *gin.Context) {
-        g := handler.GinContext{Ctx: ctx}
+        g := util.GinContext{Ctx: ctx}
 		res := []student.Order{}
 
 		//TODO:選出最近一週的所有訂單。
@@ -419,7 +420,7 @@ func (sc *OrderController) GetOrdersWithinAWeek() gin.HandlerFunc {
 
 func (sc *OrderController) GetOrder() gin.HandlerFunc {
     return func(ctx *gin.Context) {
-        g := handler.GinContext{Ctx: ctx}
+        g := util.GinContext{Ctx: ctx}
 
 		Order := student.Order{}
 		if id:= ctx.Query("id"); id !="" {
@@ -455,7 +456,7 @@ func (sc *OrderController) GetOrder() gin.HandlerFunc {
 
 func (sc *OrderController) GetOrders() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx:ctx}
+		g := util.GinContext{Ctx:ctx}
 		Orders := []student.Order{}
 		result := db.PostgresDB.Debug().Find(&Orders)
 
@@ -471,7 +472,7 @@ func (sc *OrderController) GetOrders() gin.HandlerFunc {
 
 func (sc *OrderController) DeleteOrder() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 		Order := student.Order{}
 
 		g.Ctx.ShouldBind(&Order)
@@ -506,7 +507,7 @@ func (sc *OrderController) DeleteOrder() gin.HandlerFunc {
 
 func (sc *OrderController) UpdateOrder() gin.HandlerFunc {
 	return func(ctx *gin.Context)  {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 	
 		Order := student.Order{}
 		
@@ -542,7 +543,7 @@ func (sc *OrderController) UpdateOrder() gin.HandlerFunc {
 
 func(sc * OrderController) CreateOrder() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx: ctx}
+		g := util.GinContext{Ctx: ctx}
 
 		type responseJSON struct {
 			student.Order

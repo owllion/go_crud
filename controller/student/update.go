@@ -3,7 +3,7 @@ package studentController
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 
 
 func UpdateStudent(ctx *gin.Context) {
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 	
 	student := student.Student{}
 	

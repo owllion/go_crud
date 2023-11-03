@@ -4,13 +4,13 @@ import (
 	"fmt"
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateStudent(ctx *gin.Context) {
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 
 	//創建struct instance
 	req := []student.Student{}

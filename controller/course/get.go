@@ -3,15 +3,14 @@ package courseRoute
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 
 func GetCourses(ctx *gin.Context) {
-	g := handler.GinContext{Ctx:ctx}
-	
+	g := util.GinContext{Ctx: ctx}	
 	courses := []student.Course{}
 	result := db.MysqlDB.Debug().Find(&courses)
 
@@ -25,8 +24,7 @@ func GetCourses(ctx *gin.Context) {
 
 func GetCourse(ctx *gin.Context) {
 
-	g := handler.GinContext{Ctx: ctx}
-
+	g := util.GinContext{Ctx: ctx}
 	course := student.Course{}
 	if id:= ctx.Query("id"); id !="" {
 		result := db.DB.Where(`"ID" = ?`, id).Find(&course)

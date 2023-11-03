@@ -3,7 +3,7 @@ package scRoute
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 
 
 func GetStudentCourses(ctx *gin.Context) {
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 	studentCourses := []student.StudentCourse{}
 
 	studentId := ctx.Query("studentId")

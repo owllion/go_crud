@@ -3,7 +3,7 @@ package courseRoute
 import (
 	db "practice/database"
 	student "practice/models"
-	handler "practice/util"
+	"practice/util"
 
 	"strconv"
 
@@ -14,7 +14,7 @@ import (
 
 func DeleteCourse(ctx *gin.Context) {
 
-	g := handler.GinContext{Ctx: ctx}
+	g := util.GinContext{Ctx: ctx}
 	course := student.Course{}
 	g.Ctx.ShouldBind(&course)
 
