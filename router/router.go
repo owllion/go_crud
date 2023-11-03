@@ -40,6 +40,8 @@ func Setup_Router() *gin.Engine {
 		order.GET("/orders/specificRange", orderController.GetOrderNumInSpecificRange())
 		order.GET("/order/countInMonth", orderController.CountOrdersInMonth())
 		order.GET("/order/countInEachMonth", orderController.CountOrdersInEachMonth())
+		order.GET("/orders/inLastMonth", orderController.GetAllOrdersInLastMonth())
+		order.GET("/order/last/inEachMonth", orderController.GetLastOrderInEachMonth())
 	}
 
 	course := router.Group("api")

@@ -24,6 +24,95 @@ func NewOrderController(e *gin.Engine) *OrderController {
 
 // 商業邏輯
 
+func (sc *OrderController) GetLastOrderInEachMonth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		g := handler.GinContext{Ctx: ctx}
+		type responseJSON struct {
+			LastOrder map[string]student.Order
+		}
+		res := responseJSON{LastOrder: make(map[string]student.Order)}
+
+		for i:=1; i <13 ; i++ {
+			startDate := time.Date(time.Now().Year(), time.Month(i), 1, 0,0,0,0, time.UTC)	
+			startDateStr := startDate.Format("2006-01-02") + " 00:00:00"
+
+			endDate := startDate.AddDate(0, 1, -1)
+			endDateStr := endDate.Format("2006-01-02") + " 23:59:59"
+
+
+			order := &student.Order{}
+			result := db.PostgresDB.Debug().
+						Table(`enrollment."order"`).
+						Where(`"created_at" between ? AND ?`, startDateStr, endDateStr).
+						Order("created_at DESC").
+						Limit(1).
+						Find(&order)
+
+			//NOTE: Find拿回的資料結構，要和Find(xx) 這邊xx定義的一樣
+			//不然就是等著抱錯。然後order := 這邊有寫&，代表拿的是他的記憶體位址
+			//所以下面賦值給res.LastOrder[strconv.Itoa(i)]時，要寫 *去拿到order真實的值，不然會error!
+
+			if result.Error != nil {
+				g.SendResponse(500, "Fail to get data", result.Error.Error())
+				return
+			}
+
+			//NOTE: 基本上這種要回圈內不去get資料的，都不能寫result.RowsEffected，因為有一筆沒有資料就會直接return
+				
+			res.LastOrder[strconv.Itoa(i)] = *order
+			fmt.Println("resLastOrder: ",strconv.Itoa(i), res.LastOrder[strconv.Itoa(i)])
+
+		}
+
+		g.SendResponse(200, "OK", res)
+
+	}		
+}
+func (sc *OrderController) GetAllOrdersInLastMonth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		g := handler.GinContext{Ctx: ctx}
+		res := []student.Order{}
+
+		today := time.Now()
+		curMonth := today.Month()
+
+		lastMonth := curMonth - 1
+		if lastMonth == 0 {
+			lastMonth = 12 // 如果上个月是 0 月，表示上一年的 12 月
+		}
+
+		// 获取上个月的第一天（初）
+		startDate := time.Date(today.Year(), lastMonth, 1, 0, 0, 0, 0, time.UTC)
+		startDateStr := startDate.Format("2006-01-08") + " 00:00:00"
+		//變成8號欸
+
+
+		// 获取上个月的最后一天（底）
+		endDate := startDate.AddDate(0, 1, -1)
+		endDateStr := endDate.Format("2006-01-02") + " 23:59:59"
+
+		result := db.PostgresDB.
+					Debug().
+					Table(`enrollment."order"`).
+					Where(`"created_at" BETWEEN ? AND ?`, startDateStr, endDateStr).
+					Find(&res)
+
+		fmt.Println("-----------------sDate ~ eDate----------------", startDateStr, endDateStr)
+				
+
+		if result.Error != nil {
+			g.SendResponse(500, "Fail to get data", result.Error.Error())
+			return
+		}
+
+		if result.RowsAffected == 0 {
+			g.SendResponse(404, "No such data", nil)
+			return
+		}
+
+		g.SendResponse(200, "OK", res)
+	}		
+}
 func (sc *OrderController) CountOrdersInEachMonth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		type responseJSON struct {
@@ -85,27 +174,22 @@ func (sc *OrderController) CountOrdersInMonth() gin.HandlerFunc {
 
 		var startDate,endDate time.Time
 		var startDateStr, endDateStr string
-		
-		rand.Seed(time.Now().UnixNano())
-		randomNumber := rand.Intn(11)
-
-		if randomNumber < 8 {
-			//有傳
-			monthStr := "5"
-			month, err := strconv.Atoi(monthStr)
-			if err != nil {
-				g.SendResponse(400,"Fail to convert month string", err.Error())
-				return
-			}
-			//月初
-			startDate = time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, time.UTC)
-			
-			startDateStr = startDate.Format("2006-01-02")
-
-			//月底
-			endDate = startDate.AddDate(0,1,-1)
-			endDateStr = endDate.Format("2006-01-02")
+	
+		monthStr := "5"
+		month, err := strconv.Atoi(monthStr)
+		if err != nil {
+			g.SendResponse(400,"Fail to convert month string", err.Error())
+			return
 		}
+		//月初
+		startDate = time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+		
+		startDateStr = startDate.Format("2006-01-02")
+
+		//月底
+		endDate = startDate.AddDate(0,1,-1)
+		endDateStr = endDate.Format("2006-01-02")
+	
 		
 		//前端傳的月份，沒傳就是當月
 		result := db.PostgresDB.
