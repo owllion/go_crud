@@ -1,0 +1,6 @@
+"id","inspection_level","qty_range_from","qty_range_to","sampling_letter"
+1,"I",9,15,"A"
+2,"I",16,25,"B"
+3,"II",3201,10000,"L"
+4,"II",16,25,"C"
+5,"II",1201,3200,"K"

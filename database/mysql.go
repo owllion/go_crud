@@ -3,8 +3,6 @@ package db
 import (
 	"fmt"
 
-	student "practice/models"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,5 +17,5 @@ func InitMySQL() {
 
 	fmt.Println("Connect to MySQL!")
 
-	MysqlDB.AutoMigrate(&student.Student{}, &student.Course{}, &student.StudentCourse{})
+	// MysqlDB.AutoMigrate(&student.Student{}, &student.Course{}, &student.StudentCourse{})
 }

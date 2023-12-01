@@ -1,0 +1,3 @@
+"id","user_id","product_qty","inspection_level","sampling_letter","critical_aql","major_aql","minor_aql","qty_range_from","qty_range_to","critical_ac","major_ac","minor_ac","created_at"
+1,1,0,"II","L","0.065","2.5","4",3201,10000,0,10,14,"2023-12-01 03:05:17.482014"
+3,1,0,"II","K","1","1.5","2.5",1201,3200,3,5,7,"2023-12-01 03:15:41.307633"
