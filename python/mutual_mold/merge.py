@@ -26,7 +26,9 @@ def mergeFiles():
     merged_data = pd.DataFrame()
 
     for file in getExcelList():
-        xls = pd.ExcelFile(file)
+        file = './files/' + file
+        xls = pd.ExcelFile(file)  
+        print('xls',xls)
         sheet_name = xls.sheet_names[1]  # 選擇第二個工作表
         df = pd.read_excel(file, sheet_name, skiprows=4)
         merged_data = pd.concat([merged_data, df], ignore_index=True)
