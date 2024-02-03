@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-	aqlController "practice/controller/AQL"
 	courseRoute "practice/controller/course"
 	orderController "practice/controller/order"
 	studentController "practice/controller/student"
@@ -23,22 +22,15 @@ func Setup_Router() *gin.Engine {
 
 	studentController := studentController.NewStudentController(router)
 	orderController := orderController.NewOrderController(router)
-	aqlController := aqlController.NewAqlController(router)
-	
+
 	//NOTE: 這邊 controller 需要"呼叫"getStudent這些函數，因為他們是"回傳"一個gin.HandleFunc，但原本的是"本身" type就是HandleFunc，所以不需要呼叫，直接傳遞即可
-	student := router.Group("api") 
+	student := router.Group("api")
 	{
 		student.GET("/student", studentController.GetStudent())
 		student.GET("/students", studentController.GetStudents())
 		student.POST("/student", studentController.CreateStudent())
-		student.DELETE("/student",studentController.DeleteStudent())
+		student.DELETE("/student", studentController.DeleteStudent())
 		student.POST("/student/modify", studentController.UpdateStudent())
-	}
-
-	aql := router.Group("api")
-	{
-		aql.GET("/aql", aqlController.GetAqlAc())
-
 	}
 
 	order := router.Group("api")
@@ -67,11 +59,9 @@ func Setup_Router() *gin.Engine {
 		studentCourseRoute.DELETE("/sc", scRoute.DeleteStudentCourse)
 	}
 
-
 	wsGroup := router.Group("chat")
 	{
 		wsGroup.GET("/", websocket.HandleConnection)
 	}
 	return router
 }
-

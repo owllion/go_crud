@@ -1,15 +1,15 @@
-package student
+package model
 
 import "time"
 
 type StudentCourse struct {
-    StudentID int `gorm:"primaryKey"` 
-    CourseID  int `gorm:"primaryKey"` 
-    EnrollmentDate time.Time 
-    Student Student `gorm:"foreignKey:StudentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-    Course Course `gorm:"foreignKey:CourseID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-    
-    CreatedAt time.Time `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP"`
+	StudentID      int `gorm:"primaryKey"`
+	CourseID       int `gorm:"primaryKey"`
+	EnrollmentDate time.Time
+	Student        Student `gorm:"foreignKey:StudentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Course         Course  `gorm:"foreignKey:CourseID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+
+	CreatedAt time.Time `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP"`
 }
 
 func (StudentCourse) TableName() string {
@@ -23,4 +23,3 @@ func (StudentCourse) TableName() string {
 //TODO: 1-1 一個學生選一門課，學生id是pk，課程id是fk(和其他表建立關聯)，確保課程是真的存在
 
 //TODO: m-m 一個學生選多門，一門可被多人選，中間表pk來自學生&課程pk(id)，同時也需寫fk去做關聯 -> user_id = Column(String(80), ForeignKey("user.id"), primary_key=True, nullable=False) ///// coupon_id = Column(String(80), ForeignKey("coupon.id"), primary_key=True, nullable=False)，可以看到sqlAlchemy寫法和gorm非常類似，感覺是只有差在py的要自己寫 "coupon.id"(關聯的table & 要關聯的欄位，相當於 foreignKey:StudentID;references:ID" )
-
