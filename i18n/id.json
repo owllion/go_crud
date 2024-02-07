@@ -1,0 +1,32 @@
+{
+      "cancelqty": "Jumlah Pembatalan",
+      "confirmqty": "Jumlah yang Dikonfirmasi Pelanggan",
+      "currencytype": "Mata Uang",
+      "custID": "No. ID Pelanggan",
+      "custalias": "Nama Singkatan Pelanggan",
+      "demandqty": "Jumlah Penjualan",    
+      "itemsum": "Harga Satuan",
+      "itemsumtax": "Pajak/Satuan ",
+    
+      "pageHeader": "Operasi Penjualan",
+
+      "punit": "Unit Penjualan",
+      "unitprice": "Harga Pembelian",
+      "returnqty": "Jumlah yang Dikembalikan",
+  
+      "subtotal": "Total Termasuk Pajak",
+      "sumtotal": "Total Tanpa Pajak",
+      "total": "Total Termasuk Pajak (Mata Uang Transaksi)",
+      "shipped": "dikirim",
+      "unshipped": "belum dikirim",
+
+      "pdtNM": "Nama Produk",
+      "pdtspec": "Spesifikasi",
+      "dealPN": "Nomor Bahan Transaksi",
+      "N": "pesanan wo",
+
+      "date": "Tanggal",
+      "PN": "EPN",
+      "dealN": "No. ",
+      "header": "Laporan Rincian Pesanan_{{.reportType}}"
+  }
