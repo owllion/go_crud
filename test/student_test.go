@@ -24,66 +24,63 @@ type RequestOptions struct {
 	Controller gin.HandlerFunc
 	Path       string
 	// Body       *bytes.Reader
-	Body       *bytes.Buffer
+	Body *bytes.Buffer
 }
 
 func doRequest(opts RequestOptions) *httptest.ResponseRecorder {
-    r := gin.Default()
-    r.Handle(opts.Method, opts.Route, opts.Controller)
+	r := gin.Default()
+	r.Handle(opts.Method, opts.Route, opts.Controller)
 	fmt.Println("op.Body", opts.Body)
 	if opts.Body == nil {
 		opts.Body = &bytes.Buffer{}
 	}
-    req, _ := http.NewRequest(opts.Method, opts.Path, opts.Body)
-    resp := httptest.NewRecorder()
-    r.ServeHTTP(resp, req)
+	req, _ := http.NewRequest(opts.Method, opts.Path, opts.Body)
+	resp := httptest.NewRecorder()
+	r.ServeHTTP(resp, req)
 
-    return resp
+	return resp
 }
 
-
-
-// func getParsedDate(t *testing.T,dateTime string) (parsedDate time.Time, err error) {
-// 	const layout = "2006-01-02T15:04:05Z07:00"
-// 	parsedDate, err = time.Parse(layout, dateTime)
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
-// 	return parsedDate, err
-// }
+//	func getParsedDate(t *testing.T,dateTime string) (parsedDate time.Time, err error) {
+//		const layout = "2006-01-02T15:04:05Z07:00"
+//		parsedDate, err = time.Parse(layout, dateTime)
+//		if err != nil {
+//			t.Errorf(err.Error())
+//		}
+//		return parsedDate, err
+//	}
 func getParsedDate(t *testing.T, dateStr string) (time.Time, error) {
-    parsed, err := time.Parse("2006-01-02T15:04:05-07:00", dateStr)
-    if err != nil {
-        t.Fatalf("Error parsing date: %v", err)
-    }
-    return parsed.In(time.UTC), nil
+	parsed, err := time.Parse("2006-01-02T15:04:05-07:00", dateStr)
+	if err != nil {
+		t.Fatalf("Error parsing date: %v", err)
+	}
+	return parsed.In(time.UTC), nil
 }
-
-
-
 
 func TestGetStudent(t *testing.T) {
 	SetMock()
 
 	//NOTE: 建立假資料 & sql clause
-	parsedBirth, _ := getParsedDate(t,"1995-05-25T08:00:00+08:00")
-	fmt.Println("pB",parsedBirth)
+	parsedBirth, _ := getParsedDate(t, "1995-05-25T08:00:00+08:00")
+	fmt.Println("pB", parsedBirth)
 	rows := sqlmock.NewRows([]string{"id", "student_id", "name", "birth_date", "admission_year"}).
-    AddRow(5, "s123", "Alex", parsedBirth, 2013)
+		AddRow(5, "s123", "Alex", parsedBirth, 2013)
 
 	//NOTE: Postgres Clause
-	// query := `SELECT * FROM "enrollment"."student" WHERE "id" = $1`
-	// Mock.ExpectQuery(`SELECT (.+) FROM "enrollment"."student" WHERE (.+)`).WithArgs(5).WillReturnRows(rows)
+	// expectedSQL := "SELECT (.+) FROM \"enrollment.student\" WHERE id =(.+)"
+	Mock.ExpectQuery("^SELECT (.+) FROM \"enrollment.student\" WHERE id = \\$5").WillReturnRows(rows)
 
+	// Mock.ExpectQuery(expectedSQL).WillReturnRows(rows)
+
+	assert.Nil(t, Mock.ExpectationsWereMet())
+	// query := `SELECT * FROM "enrollment"."student" WHERE "id" = ?`
+	// Mock.ExpectQuery(query).WithArgs(5).WillReturnRows(rows)
 
 	// queryPattern := regexp.QuoteMeta(`SELECT * FROM "enrollment"."student" WHERE "id" = $1`)
-	Mock.ExpectQuery(`SELECT (.+) FROM "enrollment"."student" WHERE (.+)`).WillReturnRows(rows)
-
-
+	// Mock.ExpectQuery(`SELECT (.+) FROM "enrollment"."student" WHERE (.+)`).WillReturnRows(rows)
 
 	//NOTE: MySQl Clause
 	// Mock.ExpectQuery("SELECT * FROM `students` WHERE `id` = ?").WithArgs(5).WillReturnRows(rows)
-
 
 	getOpts := RequestOptions{
 		Method:     "GET",
@@ -92,7 +89,6 @@ func TestGetStudent(t *testing.T) {
 		Path:       "/student?id=5",
 	}
 	resp := doRequest(getOpts)
-	
 
 	//NOTE: ExpectationsWereMet 這個一定要放在request之後!!! 不然他就會抱錯說 mock sql clause 沒有match 之類的錯誤
 	//NOTE: 加上這，就過不了，不然是有過的
@@ -107,8 +103,6 @@ func TestGetStudent(t *testing.T) {
 	assert.Equal(t, expectedStatus, resp.Code)
 	// fmt.Println("回傳:", resp.Body.String())
 
-
-	
 	//NOTE: 確認回傳資料正確性
 	var expectedMap map[string]interface{}
 	var responseMap map[string]interface{}
@@ -147,9 +141,9 @@ func TestGetStudent(t *testing.T) {
 	}
 
 	//NOTE: 確認型別正確之後才能讀取 key喔!
-	sID, exists := data["id"].(float64) 
+	sID, exists := data["id"].(float64)
 	// JSON 解碼時，所有數字都會被當作 float64
-	
+
 	if !exists {
 		t.Fatalf("'id' does not exist in 'data'")
 	}
@@ -167,33 +161,31 @@ func TestGetStudent(t *testing.T) {
 
 func TestAddStudent(t *testing.T) {
 	SetMock()
-	
-	parsedDate, _ := getParsedDate(t,"1995-05-25T08:00:00+08:00")
-	
+
+	parsedDate, _ := getParsedDate(t, "1995-05-25T08:00:00+08:00")
+
 	query := fmt.Sprintf(`INSERT INTO "enrollment"."student" ("student_id","name","birth_date","admission_year","created_at") VALUES ('s654','John Doe','%s',2019) RETURNING "id","created_at"`, parsedDate.Format("2006-01-02 15:04:05"))
 
-
-    Mock.ExpectBegin()
+	Mock.ExpectBegin()
 	Mock.ExpectExec(regexp.QuoteMeta(query)).
 		WithArgs("s654", "John Doe", parsedDate, 2019)
 	Mock.ExpectCommit()
-	
-		// WillReturnResult(sqlmock.NewResult(1, 1))
-	 // assuming the insert will return ID 1 and affect 1 row
-	 students := []student.Student{
+
+	// WillReturnResult(sqlmock.NewResult(1, 1))
+	// assuming the insert will return ID 1 and affect 1 row
+	students := []student.Student{
 		{
 			StudentID:     "s654",
 			Name:          "John Doe",
 			BirthDate:     parsedDate,
 			AdmissionYear: 2019,
-				
 		},
 	}
-	
+
 	jsonData, _ := json.Marshal(students)
-	// reader := bytes.NewReader(jsonData)	//這是
-	body := bytes.NewBuffer(jsonData)	//這是
-	
+	// reader := bytes.NewReader(jsonData)
+	body := bytes.NewBuffer(jsonData)
+
 	postOpts := RequestOptions{
 		Method:     "POST",
 		Route:      "/student",
@@ -202,30 +194,28 @@ func TestAddStudent(t *testing.T) {
 		Body:       body,
 	}
 	resp := doRequest(postOpts)
-	
-	
-    // Check if there are any unfulfilled expectations
-    if err := Mock.ExpectationsWereMet(); err != nil {
-        t.Errorf("there were unfulfilled expectations: %s", err)
-    }
 
-    // Check the HTTP status code
-    expectedStatus := http.StatusOK
-    assert.Equal(t, expectedStatus, resp.Code)
+	// Check if there are any unfulfilled expectations
+	if err := Mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
 
-    // Compare the expected and actual response
-    expectedRes := `{
+	// Check the HTTP status code
+	expectedStatus := http.StatusOK
+	assert.Equal(t, expectedStatus, resp.Code)
+
+	// Compare the expected and actual response
+	expectedRes := `{
 		"status": 200,
 		"msg": "新增成功",
 		"data": null
 	}`
-    var expectedMap, responseMap map[string]interface{}
-    json.Unmarshal([]byte(expectedRes), &expectedMap)
-    json.Unmarshal([]byte(resp.Body.String()), &responseMap)
+	var expectedMap, responseMap map[string]interface{}
+	json.Unmarshal([]byte(expectedRes), &expectedMap)
+	json.Unmarshal([]byte(resp.Body.String()), &responseMap)
 
 	fmt.Println("responseMap:", responseMap)
 
-    assert.Equal(t, expectedMap["msg"], responseMap["msg"])
-
+	assert.Equal(t, expectedMap["msg"], responseMap["msg"])
 
 }
