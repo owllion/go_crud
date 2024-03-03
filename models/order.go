@@ -8,15 +8,16 @@ import (
 
 type Order struct {
 	gorm.Model
-	ID           uint      `gorm:"column:id" json:"id"`
-	OrderNumber  string    `gorm:"column:ordernumber" json:"ordernumber"`
-	CustomerID   uint      `gorm:"column:customerid" json:"customerid"`
-	TotalPrice   float64   `gorm:"column:totalprice" json:"totalprice"`
-	CurrencyType string    `gorm:"column:currencytype" json:"currencytype"`
-	ExchangeRate float64   `gorm:"column:exchangerate" json:"exchangerate"`
-	Status       string    `gorm:"column:status" json:"status"`
-	CreatedAt    time.Time `gorm:"column:createdat" json:"createdat"`
-	UpdatedAt    time.Time `gorm:"column:updatedat" json:"updatedat"`
+	ID           uint          `gorm:"column:id" json:"id"`
+	OrderNumber  string        `gorm:"column:ordernumber" json:"ordernumber"`
+	CustomerID   uint          `gorm:"column:customerid" json:"customerid"`
+	TotalPrice   float64       `gorm:"column:totalprice" json:"totalprice"`
+	CurrencyType string        `gorm:"column:currencytype" json:"currencytype"`
+	ExchangeRate float64       `gorm:"column:exchangerate" json:"exchangerate"`
+	Status       string        `gorm:"column:status" json:"status"`
+	CreatedAt    time.Time     `gorm:"column:createdat" json:"createdat"`
+	UpdatedAt    time.Time     `gorm:"column:updatedat" json:"updatedat"`
+	OrderDetail  []OrderDetail `json:"orderDetail"`
 }
 
 // type Order struct {
@@ -25,6 +26,6 @@ type Order struct {
 // 	CreatedAt  time.Time `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP;column:created_at" json:"created_at"`
 // }
 
-// func (Order) TableName() string {
-// 	return "enrollment.order"
-// }
+func (Order) TableName() string {
+	return "enrollment.order"
+}

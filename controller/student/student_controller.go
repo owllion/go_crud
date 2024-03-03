@@ -12,23 +12,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 type StudentController struct {
-    *gin.Engine
+	*gin.Engine
 }
 
 // 构造函数
 func NewStudentController(e *gin.Engine) *StudentController {
-    return &StudentController{e}
+	return &StudentController{e}
 }
 
+func (sc *StudentController) GetHello() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		g := util.GinContext{Ctx: ctx}
+		g.SendResponse(200, "Hello", nil)
+	}
+}
 
 // 这里是业务方法
 func (sc *StudentController) GetStudent() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
-        g := util.GinContext{Ctx: ctx}
+	return func(ctx *gin.Context) {
+		g := util.GinContext{Ctx: ctx}
 
 		student := student.Student{}
-		if id:= ctx.Query("id"); id !="" {
+		if id := ctx.Query("id"); id != "" {
 			sID, err := strconv.Atoi(id) //轉成int
 
 			if err != nil {
@@ -42,27 +49,26 @@ func (sc *StudentController) GetStudent() gin.HandlerFunc {
 
 			//NOTE: POstgres寫法
 			result := db.PostgresDB.Debug().Where(`"id" = ?`, sID).Find(&student)
-			
+
 			if result.Error != nil {
 				g.SendResponse(500, result.Error.Error(), nil)
 				return
 			}
 			if result.RowsAffected == 0 {
 				g.SendResponse(404, "no such student", nil)
-				return 
+				return
 			}
-			g.SendResponse(200,"get student data successfully", student)
-			return 
+			g.SendResponse(200, "get student data successfully", student)
+			return
 		}
 
-		g.SendResponse(400,"Please provide valid student's id",student)
+		g.SendResponse(400, "Please provide valid student's id", student)
 	}
 }
 
-
 func (sc *StudentController) GetStudents() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		g := handler.GinContext{Ctx:ctx}
+		g := handler.GinContext{Ctx: ctx}
 		students := []student.Student{}
 		result := db.PostgresDB.Debug().Find(&students)
 
@@ -71,7 +77,7 @@ func (sc *StudentController) GetStudents() gin.HandlerFunc {
 			return
 		}
 
-		g.SendResponse(200,"get all students data successfully",students)
+		g.SendResponse(200, "get all students data successfully", students)
 
 	}
 }
@@ -83,7 +89,7 @@ func (sc *StudentController) DeleteStudent() gin.HandlerFunc {
 
 		g.Ctx.ShouldBind(&student)
 
-		if id := ctx.Query("id") ; id != "" {
+		if id := ctx.Query("id"); id != "" {
 
 			id, err := strconv.Atoi(id)
 
@@ -91,74 +97,72 @@ func (sc *StudentController) DeleteStudent() gin.HandlerFunc {
 				g.SendResponse(400, "無效id", err.Error())
 				return
 			}
-			
+
 			result := db.PostgresDB.Debug().Where("`id` = ?", id).Delete(&student)
 
-			if result.RowsAffected == 0 { 
+			if result.RowsAffected == 0 {
 				g.SendResponse(404, "未找到學生", nil)
 				return
 			}
 
 			if result.Error != nil {
-				g.SendResponse(500,"刪除學生失敗",result.Error.Error())
+				g.SendResponse(500, "刪除學生失敗", result.Error.Error())
 				return
 			}
 			g.SendResponse(200, "刪除成功", nil)
 			return
 		}
-		g.SendResponse(400,"請傳學生id",nil)
+		g.SendResponse(400, "請傳學生id", nil)
 	}
 }
 
-
 func (sc *StudentController) UpdateStudent() gin.HandlerFunc {
-	return func(ctx *gin.Context)  {
+	return func(ctx *gin.Context) {
 		g := util.GinContext{Ctx: ctx}
-	
+
 		student := student.Student{}
-		
+
 		g.Ctx.ShouldBind(&student)
-		if id := ctx.Query("id") ; id != "" {
-	
+		if id := ctx.Query("id"); id != "" {
+
 			id, err := strconv.Atoi(id)
-	
+
 			if err != nil {
 				g.SendResponse(400, "無效id", err.Error())
 				return
 			}
 			//NOTE: mysql的寫法是"‵‵"，剛好和postgres相反(大概啦...目前改完後就更新成功了)
 			result := db.PostgresDB.Debug().Where("`id` = ?", id).Updates(&student)
-	
-			if result.RowsAffected == 0 { 
+
+			if result.RowsAffected == 0 {
 				/*
-				NOTE: 
-					用gorm的updates，如果找不到資源，他就只是不更新，不會抱錯，還會return 200! 如果想要確切知道到底有沒有資料被更新，就要用RowsAffected去查看被影響的資料筆數
+					NOTE:
+						用gorm的updates，如果找不到資源，他就只是不更新，不會抱錯，還會return 200! 如果想要確切知道到底有沒有資料被更新，就要用RowsAffected去查看被影響的資料筆數
 				*/
-	
+
 				g.SendResponse(404, "未找到學生", nil)
 				return
 			}
-	
+
 			if result.Error != nil {
-				g.SendResponse(500,"更新學生資料失敗",result.Error.Error())
+				g.SendResponse(500, "更新學生資料失敗", result.Error.Error())
 				return
 			}
 			g.SendResponse(200, "更新成功", nil)
 			return
 		}
-		g.SendResponse(400,"請傳學生id",nil)
+		g.SendResponse(400, "請傳學生id", nil)
 
 	}
 }
 
-
-func(sc * StudentController) CreateStudent() gin.HandlerFunc {
+func (sc *StudentController) CreateStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		g := util.GinContext{Ctx: ctx}
 
 		type responseJSON struct {
 			student.Student
-			Name  string `json:"name"`
+			Name string `json:"name"`
 		}
 
 		// 創建struct instance
@@ -174,16 +178,16 @@ func(sc * StudentController) CreateStudent() gin.HandlerFunc {
 			// 取得item的反射值，因為item是一個結構，所以需要使用Elem()來獲取其基礎值
 			// 例如: 如果 item 是 Student{ID: 1, Name: "John"}, 則 v 現在就代表這個Student值
 			v := reflect.ValueOf(&item).Elem()
-			
+
 			// 迭代這個Student結構的所有欄位
 			for i := 0; i < v.NumField(); i++ {
-				fieldValue := v.Field(i)  // 這將獲取item的第i個欄位的反射值
+				fieldValue := v.Field(i) // 這將獲取item的第i個欄位的反射值
 				//取得此struct的每個欄位
-				
+
 				// 檢查這個欄位是否是指針類型
 				if fieldValue.Kind() == reflect.Ptr {
 					isZero := false
-			
+
 					// 針對欄位的基礎類型檢查其值是否為零值
 					switch fieldValue.Elem().Kind() {
 					case reflect.String:
@@ -200,7 +204,7 @@ func(sc * StudentController) CreateStudent() gin.HandlerFunc {
 						// 對於結構，我們需要比較它是否等於該類型的零值
 						isZero = fieldValue.Elem().Interface() == reflect.Zero(fieldValue.Elem().Type()).Interface()
 					}
-			
+
 					// 如果欄位是零值，將這個指針設置為nil
 					if isZero {
 						fieldValue.Set(reflect.Zero(fieldValue.Type()))
@@ -208,7 +212,7 @@ func(sc * StudentController) CreateStudent() gin.HandlerFunc {
 				}
 			}
 		}
-		
+
 		result := db.PostgresDB.Debug().Create(&req)
 
 		if result.Error != nil {
