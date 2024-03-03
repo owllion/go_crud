@@ -9,8 +9,11 @@ import (
 )
 
 func InitPostgres() {
+	//NOTE: 家裡
+	// dsn := "host=127.0.0.1 user=postgres password=123 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 
-	dsn := "host=127.0.0.1 user=postgres password=123 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	//NOTE: 公司
+	dsn := "host=127.0.0.1 user=postgres password=123456789 dbname=education port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 
 	var err error
 
