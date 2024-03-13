@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"runtime"
 )
 
 type Savings interface {
@@ -13,7 +14,7 @@ type Account struct {
 	Id        string  `json:"id"`
 	Name      string  `json:"name"`
 	Balance   float64 `json:"balance"`
-	topSecret string  `json:"topSecret"`
+	TopSecret string  `json:"topSecret"`
 }
 
 var a int
@@ -21,18 +22,60 @@ var b string
 var m (map[string]string)
 var account = Account{"1", "Ruel", 8335, "nothing"}
 
+// 幫Account家個方法
+func (a *Account) String() string {
+	//NOTE:補充1
+	//String()這種方法，在你取用enum值的時候就會直接幫你取道該ENUM變-數對應的(你設定的)值
+	//NOTE:補充2
+	//承上，其實String()貌似有特殊意義欸，目前發現只要和fmt.印出系列有關的行為，印出的結果都會是我這邊回傳的!!!!像是我原本取 account的值，印出的是" {1 Ruel 8335 nothing}"，後來改成取&指針的，印出結果就是下面這行，然後methodByName.Call的結果也是依樣!!!
+
+	return fmt.Sprintf("ID: %s, Name: %s, Balance: %.2f, Remark: %s", a.Id, a.Name, a.Balance, a.TopSecret)
+
+}
+
+func (a *Account) SG(singerNames ...string) string {
+	return fmt.Sprintf("SG's singers consist of %s,%s,%s and %s", singerNames[0], singerNames[1], singerNames[2], singerNames[3])
+}
+
 func main() {
 	// printBasicType()
-	printFieldInfo()
-	// printStructFieldValue()
+	// printFieldInfo()
+	printStructFieldValue()
 	// getStructValByElem()
 	// deepEqual()
 	// printByVFormat()
 	// printEnum()
 	// typeAssert()
-	// testEnum()
 	// printTypeFromFormat()
 	// dynamicTypeDeclare()
+	// printConst()
+	go func() {
+		fmt.Println("print Hello")
+	}()
+	fmt.Println("numOfGoroutine", runtime.NumGoroutine()) //2
+}
+
+type Test int
+
+func printConst() {
+	numOfCPU := runtime.NumCPU()
+	maxProcs := runtime.GOMAXPROCS(20)
+	fmt.Println("numOfCPU:", numOfCPU) //20
+	fmt.Println("maxProcs:", maxProcs) //20
+	//NOTE:補充
+	//CPU核心分成虛擬&實體，以我的12核20緒來說，12是實體數量，20緒是虛擬的核心(又稱作"邏輯"處理器)，
+	//那golang上面兩個方法都是拿虛擬的20，為何?不是明擺著是12嗎?
+	//這是因為比較好的CPU會有超頻功能(具體不清楚，已涉及到硬體)，總之這個功能就是可以讓你的虛擬核心被當成實體的拿去做使用，以我的電腦來說，就是相當於我有20科核心，一次最多可以開20條thread，而不只12條。
+
+	const (
+		i Test = iota
+		j
+		k
+		// // i = 7
+		// j
+		// k
+	)
+	fmt.Println("print i j k", i, j, k) //0 1 2
 }
 func dynamicTypeDeclare() {
 	var x interface{}
@@ -46,14 +89,6 @@ func printTypeFromFormat() {
 	fmt.Printf("print a's type: %T\n", a) //int
 	fmt.Printf("print b's type: %T\n", b) //int
 	fmt.Printf("print c's type: %T\n", c) //string
-}
-func testEnum() {
-	const (
-		i = 7
-		j
-		k
-	)
-	fmt.Println(i, j, k)
 }
 
 func printBasicType() {
@@ -71,38 +106,43 @@ func printBasicType() {
 // 取struct的type、name、tag(下面兩種寫法都依樣，但第2種比較簡潔)
 func printFieldInfo() {
 	t := reflect.TypeOf(account)
-	// paths := t.PkgPath()
-	// fmt.Println("@@@@@@@@@paths@@@@@@", paths)
 	for i := 0; i < t.NumField(); i++ {
-		tag := t.Field(i).Tag
-		path := t.Field(i).PkgPath
-		fmt.Println("@@@print path@@@@@", path)
-		fmt.Println("print Field Tag**---", tag) //json:"balance"
-		name := t.Field(i).Name
-		fmt.Println("priint name----", name)
-		//NOTE: FieldName
-		s, _ := t.FieldByName("Balance")
-		fmt.Println("print type----", s.Type)
-		fmt.Println("print name by FieldByName----", s.Name)
-		fmt.Println("print entire tag----------", s.Tag) //json:"balance"
-		//NOTE: Get tag value
-		fmt.Println("print tag value----------", s.Tag.Get("json")) //balance
-		//NOTE: lowercase member's info can also be accessed.
-		private, _ := t.FieldByName("topSecret")
-		fmt.Println("print private member's name----------", private.Name)
-		fmt.Println("print private member's tag----------", private.Tag.Get("json"))
+		entireTag := t.Field(i).Tag
+		fmt.Println("print entireTagg----", entireTag) //json:"id"
 
+		specificTagVal := t.Field(i).Tag.Get("json")
+		fmt.Println("print specificTagVal----", specificTagVal) //id
+
+		name := t.Field(i).Name
+		s, _ := t.FieldByName(name) //不知為啥突然用reflect.FieldByName會報錯...
+		fmt.Println("print json tag value*---", s.Tag.Get("json"))
 	}
 
 }
 
 // 要取值要用ValueOf
 func printStructFieldValue() {
-	valueOfAccount := reflect.ValueOf(account)
-	fmt.Println("print all---", valueOfAccount)
-	fmt.Println("account id---", valueOfAccount.FieldByName("Id"))
-	fmt.Println("account name---", valueOfAccount.FieldByName("Name"))
-	fmt.Println("account balance---", valueOfAccount.FieldByName("Balance"))
+	//NOTE: 這邊可以加上pointer，但只限於單純印出valueOfAccount，如果想要用這結果取到每個欄位結果，會報錯(也就是說，取記憶體位置的value，就不能用FieldByName這種方式去取直)
+	ptrVal := reflect.ValueOf(&account)
+	instanceval := reflect.ValueOf(account)
+	fmt.Println("print ptrVal---", ptrVal)
+	fmt.Println("print instanceval---", instanceval)
+
+	resOfCallString := ptrVal.MethodByName("String").Call([]reflect.Value{})
+	fmt.Println("print result of calling ptr method----", resOfCallString)
+
+	resOfCallSG := ptrVal.MethodByName("SG").Call(
+		[]reflect.Value{
+			reflect.ValueOf("Megan Thee Stallion"),
+			reflect.ValueOf("Ozuna"),
+			reflect.ValueOf("LISA"),
+			reflect.ValueOf("DJ Snake"),
+		})
+	fmt.Println("print res of calling SG---", resOfCallSG)
+
+	fmt.Println("account id---", instanceval.FieldByName("Id"))
+	fmt.Println("account name---", instanceval.FieldByName("Name"))
+	fmt.Println("account balance---", instanceval.FieldByName("Balance"))
 }
 
 func getStructValByElem() {
