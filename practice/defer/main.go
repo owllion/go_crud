@@ -40,7 +40,7 @@ func normalReturn() int {
 }
 func main() {
 
-	fmt.Println("print namedReturn------", namedReturn())   //15
+	  fmt.Println("print namedReturn------", namedReturn())   //15
 	fmt.Println("print normalReturn------", normalReturn()) //10
 
 }
