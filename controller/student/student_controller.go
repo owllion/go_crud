@@ -2,6 +2,7 @@ package studentController
 
 import (
 	"fmt"
+	"strings"
 
 	db "practice/database"
 	student "practice/models"
@@ -30,6 +31,35 @@ func (sc *StudentController) GetHello() gin.HandlerFunc {
 }
 
 // 这里是业务方法
+func (sc *StudentController) TestValidator() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		g := util.GinContext{Ctx: ctx}
+
+		type reqBody struct {
+			// Name string `json:"name" form:"name" binding:"required"`
+			// Age  int    `json:"age" form:"age" binding:"required"`
+			// Name string `json:"name" binding:"required"`
+			// Age  int    `json:"age" binding:"required"`
+			Name string `json:"name" `
+			Age  int    `json:"age" binding:"required,gte=18"`
+		}
+
+		req := reqBody{}
+
+		errMsg := ""
+		if err := g.Ctx.ShouldBind(&req); err != nil {
+			if isExist := strings.Contains(err.Error(), "gte"); isExist {
+				errMsg = "age must be greater than 18."
+			} else {
+				errMsg = "You forget to pass your age."
+			}
+			g.SendResponse(400, "Your payload has some problems.", errMsg)
+			return
+		}
+
+		g.SendResponse(200, "成功街收沒有報錯", nil)
+	}
+}
 func (sc *StudentController) GetStudent() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		g := util.GinContext{Ctx: ctx}

@@ -28,6 +28,7 @@ func Setup_Router() *gin.Engine {
 	//NOTE: 這邊 controller 需要"呼叫"getStudent這些函數，因為他們是"回傳"一個gin.HandleFunc，但原本的是"本身" type就是HandleFunc，所以不需要呼叫，直接傳遞即可
 	student := router.Group("api")
 	{
+		student.POST("testValidator", studentController.TestValidator())
 		student.GET("/hello", studentController.GetHello())
 		student.GET("/student", studentController.GetStudent())
 		student.GET("/students", studentController.GetStudents())

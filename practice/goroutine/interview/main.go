@@ -5,7 +5,10 @@ import goroutine "practice/practice/goroutine/interview/printCFD.go"
 func main() {
 	// goroutine.PrintStr()
 	// goroutine.PrintTotal100Times()
-	// goroutine.PrintLetters()
-	goroutine.Buffer1()
-	goroutine.Buffer2()
+	goroutine.PrintLetters()
+	// goroutine.Buffer1()
+	// goroutine.Buffer2()
+	// goroutine.Unbuffered1()
+	// goroutine.Unbuffered2()
+	// goroutine.Unbuffered3()
 }

@@ -39,8 +39,8 @@ func (a *Account) SG(singerNames ...string) string {
 
 func main() {
 	// printBasicType()
-	// printFieldInfo()
-	printStructFieldValue()
+	printFieldInfo()
+	// printStructFieldValue()
 	// getStructValByElem()
 	// deepEqual()
 	// printByVFormat()

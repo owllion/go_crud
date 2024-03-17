@@ -5,15 +5,17 @@ import (
 	"sync"
 )
 
+var letterCh = make(chan struct{})
+var digitCh = make(chan struct{})
+var wg = sync.WaitGroup{}
+
 // NOTE: 兩個協程交替列印10個字母和數字(結果: aaabbbb)
 func PrintLetters() {
-	letterCh := make(chan struct{}, 1)
-	digitCh := make(chan struct{}, 1)
-	wg := sync.WaitGroup{}
+
 	wg.Add(10)
 	for i := 0; i < 5; i++ {
-		go printLetter(letterCh, digitCh, &wg)
-		go printDigit(digitCh, letterCh, &wg)
+		go printLetter()
+		go printDigit()
 	}
 
 	//NOTE: 觸發第一個goroutine去執行
@@ -24,15 +26,30 @@ func PrintLetters() {
 
 }
 
-func printLetter(ch <-chan struct{}, nextCh chan<- struct{}, wg *sync.WaitGroup) {
-	<-ch
+func printLetter() {
+	<-letterCh
 	fmt.Println("a")
-	nextCh <- struct{}{}
-	wg.Done()
+	digitCh <- struct{}{}
+
+	// defer func() {
+	// 	wg.Done()
+	// 	fmt.Println("letter goruotine done")
+	// }()
+	defer wg.Done()
+
 }
-func printDigit(ch <-chan struct{}, nextCh chan<- struct{}, wg *sync.WaitGroup) {
-	<-ch
+func printDigit() {
+	<-digitCh
 	fmt.Println("1")
-	nextCh <- struct{}{}
-	wg.Done()
+
+	letterCh <- struct{}{}
+
+	// defer func() {
+	// 	wg.Done()
+	// 	fmt.Println("digit goruotine done")
+	// }()
+	defer wg.Done()
+
 }
+
+//TODO: 測試傳入值到unbuffered，然後直接關閉的結果
