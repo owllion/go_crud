@@ -2,18 +2,32 @@ package goroutine
 
 import (
 	"fmt"
+	"os"
+	"runtime/trace"
 	"sync"
 )
 
-var letterCh = make(chan struct{})
-var digitCh = make(chan struct{})
+var letterCh = make(chan struct{}, 1)
+var digitCh = make(chan struct{}, 1)
 var wg = sync.WaitGroup{}
 
 // NOTE: 兩個協程交替列印10個字母和數字(結果: aaabbbb)
 func PrintLetters() {
+	file, err := os.Create("trace.out")
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	err = trace.Start(file)
+	if err != nil {
+		panic(err)
+	}
+	defer trace.Stop()
 
 	wg.Add(10)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 5; i++ { //NOTE: 這回圈會先把所有gr一次創建完，然後就會照著創建的順序去執行、exit
 		go printLetter()
 		go printDigit()
 	}
